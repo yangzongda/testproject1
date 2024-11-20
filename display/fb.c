@@ -13,12 +13,12 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <linux/fb.h>
+#include <linux/fb.h>	// 内核源码kernel/include/linux/fb.h。获取设备信息
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
-#include "fb.h"		//自行创建
-
+#include <fb.h>		// 自行创建
+#include "bmp_test1.c"	// 引入bmp图片
 
 
 // 定义全局变量
@@ -27,6 +27,13 @@ unsigned int *pfb = NULL;	//用于保存申请到的内存空间的首地址
 int fbfd = -1;		//设成全局变量，因为fb_open和fb_close都要用到
 unsigned int screenlength = 0;
 
+// 定义一个全局变量，用于保存bmp图片
+const unsigned char *pBmp = gImage_bmp_test1;
+
+const unsigned int WIDTH_BMP_test1 = 500;
+const unsigned int HEIGHT_BMP_test1 = 500;
+//const int x_gap_bmp_test1 = 262;
+//const int y_gap_bmp_test1 = 50;
 
 int fb_open(void)
 {
@@ -132,6 +139,41 @@ void draw_line(unsigned int color)
 		*(pfb + 200 * WIDTH + x) = color;
 	}
 }
+
+
+
+void draw_bmp_test1(int x_gap, int y_gap, const unsigned char *pBmp)
+{
+	unsigned int x, y, color, p = 0;
+	
+	for(y = 0; y < HEIGHT_BMP_test1; y++)
+	{
+		if(y_gap + y > HEIGHT)
+		{
+			break;// 纵向超出屏幕，退出
+		}
+		for(x = 0; x < WIDTH_BMP_test1; x++)
+		{
+			if(x_gap + x > WIDTH)
+			{
+				p += 3;// 每次循环指向像素的p都要+3
+				continue;// 横向超出屏幕，跳过下面部分(即不显示)直接开始下一次循环
+			}
+			// 这个图像是RGB888格式，每个像素点有三字节数据。
+			// 循环的方式与图像生成方式相关，生成时从左上沿每行到右下。
+			// 通过两层外循环确定像素点，将三字节颜色值按RGB顺序写入内存
+			// 颜色不对就手动调，总之就是三个颜色的排列组合
+			color = (pBmp[p+2] << 0) | (pBmp[p+1] << 8) | (pBmp[p+0] <<16);
+			*(pfb + (y_gap + y) * WIDTH + (x_gap + x)) = color;
+			p += 3;// 3字节颜色数据对应一个像素点
+		}
+	}
+
+	printf("draw_bmp_test1 ending.\n");
+}
+
+
+
 
 
 

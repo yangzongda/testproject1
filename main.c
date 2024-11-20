@@ -1,6 +1,7 @@
 #include <stdio.h>
 
-#include "fb.h"
+#include <fb.h>
+
 
 int main(void)
 {
@@ -15,7 +16,9 @@ int main(void)
 		return -1;
 	}
 
-	draw_background(1024,600,RED);
+	draw_background(WIDTH,HEIGHT,BLACK);
+	
+	draw_bmp_test1(-50, HEIGHT - HEIGHT_BMP_test1 +50, pBmp);// 从左下角超出屏幕
 
 	fb_close();
     

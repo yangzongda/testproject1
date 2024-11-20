@@ -20,10 +20,18 @@
 #define GREENP		0x0000ff00			// 一样，说明前2个ff透明位不起作用
 
 
+// 声明这些变量，否则main.c中无法调用(头文件中不可定义)
+extern const unsigned char *pBmp;
+extern const unsigned int WIDTH_BMP_test1;
+extern const unsigned int HEIGHT_BMP_test1;
+//extern const int x_gap_bmp_test1;
+//extern const int y_gap_bmp_test1;
+
 // 函数声明
 // 画背景色和划线的测试函数
 void draw_background(unsigned int width, unsigned int height, unsigned int color);
 void draw_line(unsigned int color);
+void draw_bmp_test1(int x, int y,const unsigned char *filename);
 
 int fb_open(void);
 void fb_close(void);
